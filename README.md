@@ -83,6 +83,8 @@ The Gaussian mode for chunks analysis time for 100 threads is explained by the t
 
 ## Chunk times vs max number of threads
 
+Runs with different max threads and counting the number of chunks that have analysis times >0.5s and >1.0s - given that a normal analysis time for any given chunk is in the region of 0.3s, this accounts for numbers of chunks that take roughly twice or three times a normal analysis time (mostly due to thread freeing blockages).
+
 ![ChunksTimesvsMaxThreads3400](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile_ChunkTimeMore-1s_vs_NoMaxThreads.png)
 
 # Provenance
