@@ -51,7 +51,7 @@ The Gaussian mode for chunks analysis time for 100 threads is explained by the t
 
 ![ChunksvsTimes3400](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max1THRD_Sizes_vs_Times.png)
 
-**Conclusion: multi-threading with max 100 threads gets us around 0.2s of process time for one chunk of average size of 70kb.**
+**Conclusion: multi-threading with max 100 threads gets us around 0.2s or about 3s of process time for one chunk of average size of 70kb - the latter time is 90% comprised of thread waiting and only 10% of actual analysis time; using a single thread shows us the real chunk analysis time is about 0.2 for a chunk of averge size of 70kb.**
 
 ## Kerchunk-based engine: 64 HDF5 chunks
 
@@ -79,7 +79,7 @@ The Gaussian mode for chunks analysis time for 100 threads is explained by the t
 
 ![ChunksvsTimes64](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max1THRD_Sizes_vs_Times_Zoom.png)
 
-**Conclusion: single-threading with max 1 thread gets us around 0.3s of process time for one chunk of average size of 4000kb. Which is only marginally longer than -.2s for a chunk 60 times smaller!**
+**Conclusion: single-threading with max 1 thread gets us around 0.3s of process time for one chunk of average size of 4000kb. Which is only marginally longer than 0.2s for a chunk 60 times smaller!**
 
 # Provenance
 
