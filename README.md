@@ -81,6 +81,10 @@ The Gaussian mode for chunks analysis time for 100 threads is explained by the t
 
 **Conclusion: single-threading with max 1 thread gets us around 0.3s of process time for one chunk of average size of 4000kb. Which is only marginally longer than 0.2s for a chunk 60 times smaller!**
 
+## Chunk times vs max number of threads
+
+![ChunksTimesvsMaxThreads3400](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile_ChunkTimeMore-1s_vs_NoMaxThreads.png)
+
 # Provenance
 
 - in `3400ChunksFile_*png` and `64ChunksFile_*png` plots I used:
