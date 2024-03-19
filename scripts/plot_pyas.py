@@ -47,6 +47,23 @@ def size_vs_time():
     plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max1THRD_Sizes_vs_Times.png")
 
 
-hist_chunk_times()
-hist_chunk_sizes()
-size_vs_time()
+def hist_reductionist_response():
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_3400chunks-max150THRDS.txt", "r") as datafile:
+        reductionist_times = [float(l) for l in datafile.readlines()]
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS-run2.txt", "r") as datafile:
+        chunk_times = [float(l) for l in datafile.readlines()]
+    plt.hist(reductionist_times, density=False, bins=50, color="r", label="Red. Time")
+    plt.hist(chunk_times, density=False, bins=50, color="b", alpha=0.5, label="Tot. Chunk Time")
+    plt.grid()
+    plt.legend()
+    plt.ylabel('Counts')
+    plt.xlabel('Reductionist Response Time / Total Chunk Time [s]')
+    plt.title("3400 chunks (max 150 thread) bnl file\nRed. Time: response = request(session, url, request_data)\nChunk time: _process_chunk(...)")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRD_Reductionist_Chunks_Times.png")
+    plt.close()
+
+
+# hist_chunk_times()
+# hist_chunk_sizes()
+# size_vs_time()
+hist_reductionist_response()
