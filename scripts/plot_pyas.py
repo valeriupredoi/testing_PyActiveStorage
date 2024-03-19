@@ -63,7 +63,21 @@ def hist_reductionist_response():
     plt.close()
 
 
+def timeseries_reductionist_response():
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_3400chunks-max150THRDS.txt", "r") as datafile:
+        reductionist_times = [float(l) for l in datafile.readlines()]
+    x = range(len(reductionist_times))
+    plt.scatter(x, reductionist_times, color="r")
+    plt.grid()
+    plt.xlabel('Synthetic time')
+    plt.ylabel('Reductionist Response Times per Chunk [s]')
+    plt.title("3400 chunks (max 150 thread) bnl file\nRed. Time: response = request(session, url, request_data)")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRD_Reductionist_Times_Timeseries.png")
+    plt.close()
+
+
 # hist_chunk_times()
 # hist_chunk_sizes()
 # size_vs_time()
-hist_reductionist_response()
+# hist_reductionist_response()
+timeseries_reductionist_response()
