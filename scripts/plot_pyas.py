@@ -76,8 +76,21 @@ def timeseries_reductionist_response():
     plt.close()
 
 
+def timeseries_chunk_sizes():
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_sizes_3400chunks-max150THRDS.txt", "r") as datafile:
+        csizes = [float(l) / 1000. for l in datafile.readlines()]
+    x = range(len(csizes))
+    plt.scatter(x, csizes, color="g")
+    plt.grid()
+    plt.xlabel('Synthetic time')
+    plt.ylabel('Chunk Sizes [kb]')
+    plt.title("3400 chunks (max 150 thread) bnl file")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRD_Chunks_Sizes_Timeseries.png")
+    plt.close()
+
 # hist_chunk_times()
 # hist_chunk_sizes()
 # size_vs_time()
 # hist_reductionist_response()
-timeseries_reductionist_response()
+# timeseries_reductionist_response()
+timeseries_chunk_sizes()
