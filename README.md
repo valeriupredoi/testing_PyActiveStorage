@@ -110,7 +110,7 @@ Furthermore, we looked at timeseries of Reductionist `response` times, both for 
 
 These plots have been obtained from running Active with `max_threads=150`. In the case of the file with 3400 chunks a lot of small chunks are being prepared and sent to Reductionist via 150 Active threads, resulting in saturation and wait times for a LOT of the chunks of roughly 5s.
 
-Using one single thread by Active results in much smaller Reductionist `response` times:
+Using one single thread by Active, results give a muchsmaller Reductionist `response` time, and consistent accross the run:
 
 ![ChunksvsTimes64series](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max1THRD_Reductionist_Times_Timeseries.png)
 
