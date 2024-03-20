@@ -87,6 +87,32 @@ Runs with different max threads and counting the number of chunks that have anal
 
 ![ChunksTimesvsMaxThreads3400](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile_ChunkTimeMore-1s_vs_NoMaxThreads.png)
 
+## Understanding Reductionist
+
+### Response times
+
+We measured how long it takes for each instance of Reductionist's response time in `activestorage.reductionist.py::reduce_chunk()`:
+
+```
+response = request(session, url, request_data)
+```
+
+and found out that, per chunk, the `response` time is always close to or identical to the time `activestorage.active._process_chunk()` takes, as seen from this plot:
+
+![ChunksvsTimes64](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRD_Reductionist_Chunks_Times.png)
+
+in that plot, the red histogram (behind the transparent blue histogram) is the Reductionist `response` times, whereas the blue (transparency=50%) histogram is the histogram of Active's `_process_chunk()`. A clear bimodal distribution is visible.
+
+Furthermore, we looked at timeseries of Reductionist `response` times, both for the 3400 chunks, and for the 64 chunks files
+
+![ChunksvsTimes64series](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRD_Reductionist_Times_Timeseries.png)
+![OtherSeries](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max150THRD_Reductionist_Times_Timeseries.png)
+
+We note no particlar correlation between the Reductionist's `response` time and chunk size, as seen from this plot:
+
+![chunksTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max150THRDS_Sizes_vs_ReductionistResponseTimes.png)
+
+
 # Provenance
 
 - in `3400ChunksFile_*png` and `64ChunksFile_*png` plots I used:
