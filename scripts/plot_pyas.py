@@ -27,9 +27,9 @@ def hist_chunk_sizes():
 
 
 def size_vs_time():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max1THRD.txt", "r") as datafile:
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_64chunks-max150THRDS.txt", "r") as datafile:
         times = [float(l) for l in datafile.readlines()]
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_sizes_3400chunks-max1THRD.txt", "r") as datafile:
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_sizes_64chunks-max150THRDS.txt", "r") as datafile:
         sizes = [float(l) / 1000. for l in datafile.readlines()]
     data = [(s, t) for s, t in zip(sizes, times)]
     data = sorted(data, key=lambda tup: tup[0])
@@ -40,11 +40,11 @@ def size_vs_time():
     plt.plot(x, y)
     # plt.ylim([0.1, 0.5])
     plt.xlabel('Chunk sizes [kb]')
-    plt.ylabel('Chunk process time [s]')
+    plt.ylabel('Reductionist response time [s]')
     plt.axhline(avg_time, color="g")
-    plt.title(f"3400 chunks (max 1 thread) bnl file; avg time {avg_time}s\nKerchunk-based Total run on 2.6GHz CPU: 12min")
+    plt.title(f"64 chunks (max 150 threads) def file; avg time {avg_time}s\nKerchunk-based Total run on 2.6GHz CPU: 12min")
     plt.grid()
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max1THRD_Sizes_vs_Times.png")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/64ChunksFile-max150THRDS_Sizes_vs_ReductionistResponseTimes.png")
 
 
 def hist_reductionist_response():
@@ -64,15 +64,15 @@ def hist_reductionist_response():
 
 
 def timeseries_reductionist_response():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_3400chunks-max150THRDS.txt", "r") as datafile:
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_64chunks-max150THRDS.txt", "r") as datafile:
         reductionist_times = [float(l) for l in datafile.readlines()]
     x = range(len(reductionist_times))
     plt.scatter(x, reductionist_times, color="r")
     plt.grid()
     plt.xlabel('Synthetic time')
     plt.ylabel('Reductionist Response Times per Chunk [s]')
-    plt.title("3400 chunks (max 150 thread) bnl file\nRed. Time: response = request(session, url, request_data)")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRD_Reductionist_Times_Timeseries.png")
+    plt.title("64 chunks (max 150 thread) def file\nRed. Time: response = request(session, url, request_data)")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/64ChunksFile-max150THRD_Reductionist_Times_Timeseries.png")
     plt.close()
 
 
@@ -108,4 +108,6 @@ def timeseries_reductionist_response_threadsON():
 # hist_reductionist_response()
 # timeseries_reductionist_response()
 # timeseries_chunk_sizes()
-timeseries_reductionist_response_threadsON()
+# timeseries_reductionist_response_threadsON()
+# timeseries_reductionist_response()
+size_vs_time()
