@@ -99,7 +99,7 @@ response = request(session, url, request_data)
 
 and found out that, per chunk, the `response` time is always close to or identical to the time `activestorage.active._process_chunk()` takes, as seen from this plot:
 
-![ChunksvsTimes64](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRD_Reductionist_Chunks_Times.png)
+![ChunksvsTimes64](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRD_Reductionist_Chunks_Times.png)
 
 in that plot, the red histogram (behind the transparent blue histogram) is the Reductionist `response` times, whereas the blue (transparency=50%) histogram is the histogram of Active's `_process_chunk()`. A clear bimodal distribution is visible.
 
@@ -108,10 +108,19 @@ Furthermore, we looked at timeseries of Reductionist `response` times, both for 
 ![ChunksvsTimes64series](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRD_Reductionist_Times_Timeseries.png)
 ![OtherSeries](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max150THRD_Reductionist_Times_Timeseries.png)
 
+These plots have been obtained from running Active with `max_threads=150`. In the case of the file with 3400 chunks a lot of small chunks are being prepared and sent to Reductionist via 150 Active threads, resulting in saturation and wait times for a LOT of the chunks of roughly 5s.
+
+Using one single thread by Active results in much smaller Reductionist `response` times:
+
+![ChunksvsTimes64series](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max1THRD_Reductionist_Times_Timeseries.png)
+
 We note no particlar correlation between the Reductionist's `response` time and chunk size, as seen from this plot:
 
 ![chunksTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max150THRDS_Sizes_vs_ReductionistResponseTimes.png)
 
+and
+
+![chunksTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max1THRD_Sizes_vs_ReductionistResponseTimes.png)
 
 # Provenance
 
