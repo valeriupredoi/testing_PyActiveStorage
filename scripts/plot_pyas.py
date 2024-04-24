@@ -3,14 +3,14 @@ import numpy as np
 
 
 def hist_chunk_times():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max1THRD.txt", "r") as datafile:
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_ThreeReducts.txt", "r") as datafile:
         data = [float(l) for l in datafile.readlines()]
     plt.hist(data, density=False, bins=50)
     plt.grid()
     plt.ylabel('Counts')
     plt.xlabel('Chunk process time [s]')
-    plt.title("3400 chunks (max 1 thread) bnl file")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max1THRD_Chunks_Times_Hist.png")
+    plt.title("3400 chunks (max 150 threads, 3x Reductionist Machines) bnl file")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRDS-3RED-Machines_Chunks_Times_Hist.png")
     plt.close()
 
 
@@ -110,5 +110,6 @@ def timeseries_reductionist_response_threadsON():
 # timeseries_chunk_sizes()
 # timeseries_reductionist_response_threadsON()
 # timeseries_reductionist_response()
-size_vs_time()
-timeseries_reductionist_response()
+# size_vs_time()
+# timeseries_reductionist_response()
+hist_chunk_times()
