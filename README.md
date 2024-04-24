@@ -36,6 +36,16 @@ Chunks times (time to run each `_process_chunk()` instance; that includes intern
 
 ![max100ThreadsChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max100THRDS_Chunks_Times_Hist.png)
 
+- max 150 threads:
+
+Single Reductionist Machine
+
+![max100ThreadsChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRDS_Chunks_Times_Hist.png)
+
+3x Reductionist Machines
+
+![max100ThreadsChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRDS-3RED-Machines_Chunks_Times_Hist.png)
+
 - max 1 (one) thread: single-mode distribution of chunk process times: chi-squared distribution (implying a parametric distribution), mode mean at 0.2s
 
 ![max1ThreadChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max1THRD_Chunks_Times_Hist.png)
