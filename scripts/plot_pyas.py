@@ -3,14 +3,17 @@ import numpy as np
 
 
 def hist_chunk_times():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS.txt", "r") as datafile:
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_64chunks-max100THRDS.txt", "r") as datafile:
         data = [float(l) for l in datafile.readlines()]
-    plt.hist(data, density=False, bins=50)
+    plt.hist(data, density=False, bins=20)
     plt.grid()
     plt.ylabel('Counts')
     plt.xlabel('Chunk process time [s]')
-    plt.title("3400 chunks (max 150 threads, SINGLE Reductionist Machines) bnl file")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRDS_Chunks_Times_Hist.png")
+    plt.ylim(0, 10)
+    plt.xlim(0, 3.5)
+    plt.axvline(np.mean(data), color="r")
+    plt.title(f"64 chunks (max 100 threads, 1x (single) Reductionist Machines) def file\nmean chunk time {np.mean(data)}\ntotal chunk time {np.sum(data)}")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/64ChunksFile-max100THRDS_Chunks_Times_Hist.png")
     plt.close()
 
 
