@@ -90,7 +90,7 @@ Single Reductionist machine
 
 ![max100ThreadsChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max100THRDS-3RED-Machines_Chunks_Times_Hist.png)
 
-**3400 chunks, 150 client threads: 1x vs 3x Reductionist machines**
+**64 chunks, 100 client threads: 1x vs 3x Reductionist machines**
 
 - one machine average chunk processing time: 2.43s
 - three machines average chunk processing time: 1.84s
