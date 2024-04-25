@@ -31,7 +31,7 @@ Using the two approaches we have available:
   - single Reductionist machine 95s via max 100 threads
   - 3x Reductionist machines 75-80s (so about 16-20% faster overall, about 25-30% better for just Reductionist ops)
   - bear in mind time in Kerchunk (`_via_kerchunk()`) is 25s flat
-- time to run optimized Kerchunk-based engine: 720s via max 1 (one) thread
+- time to run optimized Kerchunk-based engine: 720s via max 1 (one) thread for single Reductionist and 680s for 3x Reductionist machines (really no gain from using 1 client thread and multiple Reductionist machines.
 
 Chunks times (time to run each `_process_chunk()` instance; that includes internal slicing/indexing and external Reductionist) and sizes analysis shows the following:
 
@@ -119,7 +119,10 @@ The Gaussian mode for chunks analysis time for 100 threads is explained by the t
 
 ![ChunksvsTimes64](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max1THRD_Sizes_vs_Times_Zoom.png)
 
-**Conclusion: single-threading with max 1 thread gets us around 0.3s of process time for one chunk of average size of 4000kb. Which is only marginally longer than 0.2s for a chunk 60 times smaller!**
+**Conclusion:
+
+- single-threading with max 1 thread gets us around 0.3s of process time for one chunk of average size of 4000kb. Which is only marginally longer than 0.2s for a chunk 60 times smaller! -> chunk size doesn't really matter wrt performance
+- increasing the number of Reductionist machines helps with performance: visible 20-30% reduction of runtime/Reductionist time if the Reductionist machines are busy ie visible for the 3400 chunks file at 150 client threads** 
 
 ## Chunk times vs max number of threads
 
