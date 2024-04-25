@@ -82,7 +82,22 @@ Chunks times (time to run each `_process_chunk()` instance; that includes intern
 
 - max 100 threads: bimodal distribution of chunk process times: chi-squared distribution (implying a parametric distribution) and non-parametric Gaussian distribution; mode means around 1.5s and 2.8s
 
+Single Reductionist machine
+
 ![max100ThreadsChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max100THRDS_Chunks_Times_Hist.png)
+
+3x Reductionist Machines
+
+![max100ThreadsChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/64ChunksFile-max100THRDS-3RED-Machines_Chunks_Times_Hist.png)
+
+**3400 chunks, 150 client threads: 1x vs 3x Reductionist machines**
+
+- one machine average chunk processing time: 2.43s
+- three machines average chunk processing time: 1.84s
+- **gain from 3x vs 1x machines: 24% speedup per average chunk processing time**
+- one machine total chunk processing time: 156s
+- three machines average chunk processing time: 118s
+- **gain from 3x vs 1x machines: 24% speedup per total chunk processing time**
 
 - max 1 (one) thread: single-mode distribution of chunk process times: chi-squared distribution (implying a parametric distribution), mode mean at 0.3s
 
