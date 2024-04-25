@@ -46,6 +46,12 @@ Single Reductionist Machine
 
 ![max100ThreadsChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max150THRDS-3RED-Machines_Chunks_Times_Hist.png)
 
+**3400 chunks, 150 client threads: 1x vs 3x Reductionist machines**
+
+- one machine average chunk processing time: 2.74s
+- three machines average chunk processing time: 2.19s
+- gain from 3x vs 1x machines: 20% speedup per chunk processing time
+
 - max 1 (one) thread: single-mode distribution of chunk process times: chi-squared distribution (implying a parametric distribution), mode mean at 0.2s
 
 ![max1ThreadChunkTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/3400ChunksFile-max1THRD_Chunks_Times_Hist.png)
