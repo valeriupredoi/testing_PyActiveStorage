@@ -50,7 +50,10 @@ Single Reductionist Machine
 
 - one machine average chunk processing time: 2.74s
 - three machines average chunk processing time: 2.19s
-- gain from 3x vs 1x machines: 20% speedup per chunk processing time
+- **gain from 3x vs 1x machines: 20% speedup per average chunk processing time**
+- one machine total chunk processing time: 9325s
+- three machines average chunk processing time: 7432s
+- **gain from 3x vs 1x machines: 20% speedup per total chunk processing time**
 
 - max 1 (one) thread: single-mode distribution of chunk process times: chi-squared distribution (implying a parametric distribution), mode mean at 0.2s
 
