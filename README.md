@@ -27,7 +27,10 @@ Using the two approaches we have available:
 ## Kerchunk-based engine: 3400 HDF5 chunks
 
 - see specific code used, and timing results in https://github.com/valeriupredoi/PyActiveStorage/issues/191 with a TL;DR beow
-- time to run optimized Kerchunk-based engine: 95s via max 100 threads
+- time to run optimized Kerchunk-based engine:
+  - single Reductionist machine 95s via max 100 threads
+  - 3x Reductionist machines 75-80s (so about 16-20% faster overall, about 25-30% better for just Reductionist ops)
+  - bear in mind time in Kerchunk (`_via_kerchunk()`) is 25s flat
 - time to run optimized Kerchunk-based engine: 720s via max 1 (one) thread
 
 Chunks times (time to run each `_process_chunk()` instance; that includes internal slicing/indexing and external Reductionist) and sizes analysis shows the following:
@@ -75,7 +78,10 @@ The Gaussian mode for chunks analysis time for 100 threads is explained by the t
 ## Kerchunk-based engine: 64 HDF5 chunks
 
 - see specific code used, and timing results in https://github.com/valeriupredoi/PyActiveStorage/issues/191 with a TL;DR beow
-- time to run optimized Kerchunk-based engine: 10s via max 100 threads
+- time to run optimized Kerchunk-based engine:
+  - single Reductionist machine: 10s via max 100 client threads
+  - 3x Reductionist machines: 9s via max 100 client threads
+  - bear in mind time via Kerchunk (`_via_kerchunk()`) is 5-6s flat, so 50-60% of total runtime
 - time to run optimized Kerchunk-based engine: 25s via max 1 (one) thread 
 
 Chunks times (time to run each `_process_chunk()` instance; that includes internal slicing/indexing and external Reductionist) and sizes analysis shows the following:
