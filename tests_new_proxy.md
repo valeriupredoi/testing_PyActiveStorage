@@ -20,3 +20,12 @@
 - new domain (mean, std dev, seconds): 27.6 +/- 0.3
 - new domain (mean, std dev, seconds): 30.1 +/- 5.1
 - previous tests (same test settings, March 2024): 75-80
+
+### Chunk times
+
+![ChunksTimes](https://github.com/valeriupredoi/testing_PyActiveStorage/blob/main/plots/old-new_S3_proxy.png)
+
+- mean chunk times decrease by about 20%
+- total chunk compute time decreases by about 15%
+- chunk times are a **lot** more Gaussian when using new domain
+- the tails we noticed previously are clearly due to network lag
