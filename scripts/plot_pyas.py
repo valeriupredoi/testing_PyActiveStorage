@@ -105,6 +105,29 @@ def timeseries_reductionist_response_threadsON():
     plt.close()
 
 
+def hist_chunk_times_NN():
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_ThreeReducts.txt", "r", encoding="utf-8") as datafile:
+        data0 = [float(l) for l in datafile.readlines()]
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_ThreeReducts_NewNetork_OldProxy.txt", "r", encoding="utf-8") as datafile:
+        data1 = [float(l) for l in datafile.readlines()]
+    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_ThreeReducts_NewNetork_NewProxy.txt", "r", encoding="utf-8") as datafile:
+        data2 = [float(l) for l in datafile.readlines()]
+    plt.hist(data0, density=False, bins=100, label="oldNwk")
+    plt.hist(data1, density=False, bins=100, label="newNwk old proxy")
+    plt.hist(data2, density=False, bins=100, label="newNwk new proxy")
+    plt.grid()
+    plt.ylabel('Counts')
+    plt.xlabel('Chunk process time [s]')
+    # plt.ylim(0, 10)
+    # plt.xlim(0, 3.5)
+    # plt.axvline(np.mean(data1), color="b")
+    # plt.axvline(np.mean(data2), color="k")
+    plt.title(f"3400 chunks (max 150 threads, 3x (activeh) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
+    plt.legend()
+    # plt.show()
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRDS-3RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.png")
+    plt.close()
+
 # hist_chunk_times()
 # hist_chunk_sizes()
 # size_vs_time()
@@ -115,4 +138,5 @@ def timeseries_reductionist_response_threadsON():
 # timeseries_reductionist_response()
 # size_vs_time()
 # timeseries_reductionist_response()
-hist_chunk_times()
+# hist_chunk_times()
+hist_chunk_times_NN()
