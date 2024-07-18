@@ -15,6 +15,7 @@ def gold_test():
         'secret': "$/'#M{0{/4rVhp%n^(XeX$q@y#&(NM3W1->~N.Q6VP.5[@bLpi='nt]AfH)>78pT",
         'client_kwargs': {'endpoint_url': "https://uor-aces-o.s3-ext.jc.rl.ac.uk"},
     }
+    # old Reductionist deployed on 1x machine (active)
     active_storage_url = "https://192.171.169.248:8080"
     # bigger_file = "ch330a.pc19790301-bnl.nc"  # 18GB 3400 HDF5 chunks
     bigger_file = "ch330a.pc19790301-def.nc"  # 17GB 64 HDF5 chunks
