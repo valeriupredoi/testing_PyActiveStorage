@@ -1,0 +1,16 @@
+3400 chunks bnl crazy file
+--------------------------
+
+Old network
+-----------
+- 1x Reductionist machine: 95s via max 150 threads
+- 3x Reductionist machine: 77s (so about 16-20% faster overall)
+- time `_via_kerchunk` flat at 25s
+
+New Network
+-----------
+- 1x Reductionist machine: 24.3s via max 150 threads (old proxy)
+- 1x Reductionist machine: 24.8s via max 150 threads (new proxy)
+- 3x Reductionist machine: 25.6s via max 150 threads (old proxy)
+- 3x Reductionist machine: 23.5s via max 150 threads (new proxy)
+- time `_via_kerchunk` flat at 6.6s
