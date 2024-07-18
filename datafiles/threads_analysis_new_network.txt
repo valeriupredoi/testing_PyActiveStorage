@@ -1,5 +1,7 @@
-3400 chunks cray file
-xxthreads.txt files
+- 3400 chunks cray file
+- 3x Reductionists on activeh (192.171.169.113)
+- new proxy (https://uor-aces-o.ext.proxy.jc.rl.ac.uk)
+- xxthreads.txt files
 
 Times: total run time (elapsed)
 Typical Kerchunk time: (Time of _via_kerchunk()) [7.3, 6.6, 6.4, 6.6, 6.4, 6.0, 6.4, 6.8, 6.9]
@@ -22,3 +24,10 @@ Typical Kerchunk time: (Time of _via_kerchunk()) [7.3, 6.6, 6.4, 6.6, 6.4, 6.0, 
 | 130 | [24.3, 23.9, 24.3] | 24.2 |
 | 140 | [21.7, 25.6, 25.3] | 24.2 |
 | 150 | [21.9, 24.3, 24.4] | 23.5 |
+
+- 1x Reductionist machine (https://192.171.169.248:8080)
+- new proxy
+
+| Threads | Times | Average |
+-----------------------------
+| 150 | [24.8, 25.3, 24.3] | 24.8 |
