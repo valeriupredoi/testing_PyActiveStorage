@@ -15,11 +15,13 @@
 
 ### Results (time)
 
+Performed 15/07/2024
+
 - new domain (seconds, elapsed): [27.4, 27.5, 28.0, 27.7, 27.7, 27.6, 28.1, 27.1, 27.7, 27.6]
 - old domain (seconds, elapsed): [27.4, 28.5, 42.2, 28.0, 37.3, 27.9, 24.9, 27.0, 28.1, 28.8]
 - new domain (mean, std dev, seconds): 27.6 +/- 0.3
-- new domain (mean, std dev, seconds): 30.1 +/- 5.1
-- previous tests (same test settings, April 2024): 75-80 meaning 2.7x sppedup
+- old domain (mean, std dev, seconds): 30.1 +/- 5.1
+- previous tests (same test settings, April 2024): 75-80 meaning 2.7x speedup
 
 ### Chunk times
 
