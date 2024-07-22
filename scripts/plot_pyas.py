@@ -119,13 +119,13 @@ def hist_chunk_times_NN():
     plt.ylabel('Counts')
     plt.xlabel('Chunk process time [s]')
     # plt.ylim(0, 10)
-    plt.xlim(0, 10)
+    # plt.xlim(0, 10)
     # plt.axvline(np.mean(data1), color="b")
     # plt.axvline(np.mean(data2), color="k")
     plt.title(f"3400 chunks (max 150 threads, 3x (activeh) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
     plt.legend()
     # plt.show()
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRDS-3RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.png")
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRDS-3RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist_noxlim.png")
     plt.close()
 
 
@@ -164,4 +164,4 @@ def hist_chunk_times_NN_1Reduct():
 # timeseries_reductionist_response()
 # hist_chunk_times()
 hist_chunk_times_NN()
-hist_chunk_times_NN_1Reduct()
+# hist_chunk_times_NN_1Reduct()
