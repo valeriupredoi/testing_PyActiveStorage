@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def chunktimes_vs_maxnothreads_oldNetwork():
@@ -64,5 +65,60 @@ def chunktimes_vs_maxnothreads_newNetwork():
     plt.show()
     # plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile_ChunkTimeMore-1s_vs_NoMaxThreads_NewNetwork.png")
 
-chunktimes_vs_maxnothreads_oldNetwork()
-chunktimes_vs_maxnothreads_newNetwork()
+
+# total times for 3400 bnl file with new proxy / old proxy
+# --- new proxy
+npd = [np.mean([50.0, 48.9, 48.5]),
+       np.mean([37.3, 31.4, 35.7]),
+       np.mean([22.9, 26.0, 25.9]),
+       np.mean([24.8, 23.4, 22.1]),
+       np.mean([21.6, 24.2, 26.9]),
+       np.mean([21.9, 24.3, 24.4]),
+]
+
+# --- old proxy
+opd = [np.mean([52.8, 55.6]),
+       np.mean([33.5, 35.0]),
+       np.mean([29.1, 25.7]),
+       np.mean([26.6, 28.1]),
+       np.mean([27.3, 25.9]),
+       np.mean([26.9, 28.1]),
+]
+
+
+def totalTimes_vs_maxnothreads_NewNetwork():
+    threads = [1., 10., 30., 50., 100., 150.]
+    old_netwk_timing_files = [
+        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max1THRD.txt",
+        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max10THRDS.txt",
+        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max30THRDS.txt",
+        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max50THRDS.txt",
+        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max100THRDS.txt",
+        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS.txt",
+    ]
+    old_net = []
+    for timing_file, n in zip(old_netwk_timing_files, threads):
+        with open(timing_file, "r") as datafile:
+            times = [float(l) for l in datafile.readlines()]
+            old_net.append(np.sum(times) / n + 20.)
+    new_proxy = npd
+    old_proxy = opd
+    plt.scatter(threads, old_net)
+    plt.plot(threads, old_net, label="ON")
+    plt.scatter(threads, old_proxy)
+    plt.plot(threads, old_proxy, label="NN old proxy")
+    plt.scatter(threads, new_proxy)
+    plt.plot(threads, new_proxy, label="NN new proxy")
+    plt.grid()
+    plt.ylim(10, 1000)
+    plt.semilogy()
+    plt.ylabel('Time [s]')
+    plt.xlabel('No max threads')
+    plt.title("3400 chunks bnl file (old network (ON), new network(NN))\ntotal runtime vs max threads")
+    plt.legend()
+    # plt.show()
+    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile_RunTimevsMaxThreads_OldNewNetwork.png")
+
+# chunktimes_vs_maxnothreads_oldNetwork()
+# chunktimes_vs_maxnothreads_newNetwork()
+totalTimes_vs_maxnothreads_NewNetwork()
