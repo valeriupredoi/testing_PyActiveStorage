@@ -120,7 +120,7 @@ def hist_chunk_times_NN(title=True, format='png'):
     plt.hist(data2, density=False, bins=100, label="NN-NP")
     plt.grid()
     plt.ylabel('Counts')
-    plt.xlabel('Chunk process time [s]')
+    plt.xlabel('Chunk process time [s] ) (R3)')
     # plt.ylim(0, 10)
     # plt.xlim(0, 10)
     # plt.axvline(np.mean(data1), color="b")
@@ -138,7 +138,7 @@ def hist_chunk_times_NN(title=True, format='png'):
     plt.close()
 
 
-def hist_chunk_times_NN_1Reduct():
+def hist_chunk_times_NN_1Reduct(title=True, format='png'):
     with open(datadir/"chunk_times_3400chunks-max150THRDS.txt", "r", encoding="utf-8") as datafile:
         data0 = [float(l) for l in datafile.readlines()]
     with open(datadir/"chunk_times_3400chunks-max150THRDS_OneReducts_NewNetork_OldProxy.txt", "r", encoding="utf-8") as datafile:
@@ -150,16 +150,21 @@ def hist_chunk_times_NN_1Reduct():
     plt.hist(data2, density=False, bins=100, label="NN-NP")
     plt.grid()
     plt.ylabel('Counts')
-    plt.xlabel('Chunk process time [s]')
+    plt.xlabel('Chunk process time [s] (R1)')
     # plt.ylim(0, 10)
     plt.xlim(0, 10)
     # plt.axvline(np.mean(data1), color="b")
     # plt.axvline(np.mean(data2), color="k")
-    plt.title(f"3400 chunks (max 150 threads, 1x (active) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
+    if title:
+        plt.title(f"3400 chunks (max 150 threads, 1x (active) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
     plt.legend()
     # plt.show()
-    plt.savefig(plotdir/"3400ChunksFile-max150THRDS-1RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.png")
-    plt.close()
+    if format == 'png':
+        plt.savefig(plotdir/"3400ChunksFile-max150THRDS-1RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.png")
+    elif format == 'pdf':
+        plt.savefig(plotdir/"pdf/3400ChunksFile-max150THRDS-1RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.pdf")
+    else:
+        raise ValueError(f'Whatdaya mean {format}?')
 
 # hist_chunk_times()
 # hist_chunk_sizes()
@@ -173,4 +178,4 @@ def hist_chunk_times_NN_1Reduct():
 # timeseries_reductionist_response()
 # hist_chunk_times()
 hist_chunk_times_NN(title=False, format='pdf')
-# hist_chunk_times_NN_1Reduct()
+hist_chunk_times_NN_1Reduct(title=False, format='pdf')
