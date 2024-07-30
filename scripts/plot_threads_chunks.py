@@ -1,15 +1,19 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
+
+datadir = Path(__file__).parent.parent/'datafiles'
+plotdir = Path(__file__).parent.parent/'plots'
 
 
 def chunktimes_vs_maxnothreads_oldNetwork():
     timing_files = [
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max1THRD.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max10THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max30THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max50THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max100THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS.txt",
+        datadir/"chunk_times_3400chunks-max1THRD.txt",
+        datadir/"chunk_times_3400chunks-max10THRDS.txt",
+        datadir/"chunk_times_3400chunks-max30THRDS.txt",
+        datadir/"chunk_times_3400chunks-max50THRDS.txt",
+        datadir/"chunk_times_3400chunks-max100THRDS.txt",
+        datadir/"chunk_times_3400chunks-max150THRDS.txt",
     ]
     counts05s = []
     counts1s = []
@@ -35,12 +39,12 @@ def chunktimes_vs_maxnothreads_oldNetwork():
 
 def chunktimes_vs_maxnothreads_newNetwork():
     timing_files = [
-        "/home/valeriu/testing_PyActiveStorage/datafiles/5threads.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/10threads.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/30threads.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/50threads.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/100threads.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/150threads.txt",
+        datadir/"5threads.txt",
+        datadir/"10threads.txt",
+        datadir/"30threads.txt",
+        datadir/"50threads.txt",
+        datadir/"100threads.txt",
+        datadir/"150threads.txt",
     ]
     counts05s = []
     counts1s = []
@@ -86,15 +90,15 @@ opd = [np.mean([52.8, 55.6]),
 ]
 
 
-def totalTimes_vs_maxnothreads_NewNetwork():
+def totalTimes_vs_maxnothreads_NewNetwork(title=True,format='png'):
     threads = [1., 10., 30., 50., 100., 150.]
     old_netwk_timing_files = [
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max1THRD.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max10THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max30THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max50THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max100THRDS.txt",
-        "/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS.txt",
+        datadir/"chunk_times_3400chunks-max1THRD.txt",
+        datadir/"chunk_times_3400chunks-max10THRDS.txt",
+        datadir/"chunk_times_3400chunks-max30THRDS.txt",
+        datadir/"chunk_times_3400chunks-max50THRDS.txt",
+        datadir/"chunk_times_3400chunks-max100THRDS.txt",
+        datadir/"chunk_times_3400chunks-max150THRDS.txt",
     ]
     old_net = []
     for timing_file, n in zip(old_netwk_timing_files, threads):
@@ -106,19 +110,24 @@ def totalTimes_vs_maxnothreads_NewNetwork():
     plt.scatter(threads, old_net)
     plt.plot(threads, old_net, label="ON")
     plt.scatter(threads, old_proxy)
-    plt.plot(threads, old_proxy, label="NN old proxy")
+    plt.plot(threads, old_proxy, label="NN-OP")
     plt.scatter(threads, new_proxy)
-    plt.plot(threads, new_proxy, label="NN new proxy")
+    plt.plot(threads, new_proxy, label="NN-NP")
     plt.grid()
     plt.ylim(10, 1000)
     plt.semilogy()
     plt.ylabel('Time [s]')
     plt.xlabel('No max threads')
-    plt.title("3400 chunks bnl file (old network (ON), new network(NN))\ntotal runtime vs max threads")
+    if title:
+        plt.title("3400 chunks bnl file (old network (ON), new network(NN))\ntotal runtime vs max threads")
     plt.legend()
     # plt.show()
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile_RunTimevsMaxThreads_OldNewNetwork.png")
+    if format == 'pdf':
+        ff = "pdf/3400ChunksFile_RunTimevsMaxThreads_OldNewNetwork.pdf"
+    else:
+        ff = "3400ChunksFile_RunTimevsMaxThreads_OldNewNetwork.png"
+    plt.savefig(plotdir/ff)
 
 # chunktimes_vs_maxnothreads_oldNetwork()
 # chunktimes_vs_maxnothreads_newNetwork()
-totalTimes_vs_maxnothreads_NewNetwork()
+totalTimes_vs_maxnothreads_NewNetwork(title=False, format='pdf')

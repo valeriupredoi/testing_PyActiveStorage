@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
+datadir = Path(__file__).parent.parent/'datafiles'
+plotdir = Path(__file__).parent.parent/'plots'
 
 def hist_chunk_times():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_64chunks-max100THRDS.txt", "r") as datafile:
+    with open(datadir/"chunk_times_64chunks-max100THRDS.txt", "r") as datafile:
         data = [float(l) for l in datafile.readlines()]
     plt.hist(data, density=False, bins=20)
     plt.grid()
@@ -13,26 +16,26 @@ def hist_chunk_times():
     plt.xlim(0, 3.5)
     plt.axvline(np.mean(data), color="r")
     plt.title(f"64 chunks (max 100 threads, 1x (single) Reductionist Machines) def file\nmean chunk time {np.mean(data)}\ntotal chunk time {np.sum(data)}")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/64ChunksFile-max100THRDS_Chunks_Times_Hist.png")
+    plt.savefig(plotdir/"64ChunksFile-max100THRDS_Chunks_Times_Hist.png")
     plt.close()
 
 
 def hist_chunk_sizes():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_sizes_3400chunks-max1THRD.txt", "r") as datafile:
+    with open(datadir/"chunk_sizes_3400chunks-max1THRD.txt", "r") as datafile:
         data = [float(l) / 1000. for l in datafile.readlines()]
     plt.hist(data, density=False, bins=50, color="r")
     plt.grid()
     plt.ylabel('Counts')
     plt.xlabel('Chunk sizes [kb]')
     plt.title("3400 chunks (max 1 thread) bnl file")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max1THRD_Chunks_Sizes_Hist.png")
+    plt.savefig(plotdir/"3400ChunksFile-max1THRD_Chunks_Sizes_Hist.png")
     plt.close()
 
 
 def size_vs_time():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_3400chunks-max1THRD.txt", "r") as datafile:
+    with open(datadir/"reductionist_response_times_3400chunks-max1THRD.txt", "r") as datafile:
         times = [float(l) for l in datafile.readlines()]
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_sizes_3400chunks-max1THRD-run2.txt", "r") as datafile:
+    with open(datadir/"chunk_sizes_3400chunks-max1THRD-run2.txt", "r") as datafile:
         sizes = [float(l) / 1000. for l in datafile.readlines()]
     data = [(s, t) for s, t in zip(sizes, times)]
     data = sorted(data, key=lambda tup: tup[0])
@@ -47,13 +50,13 @@ def size_vs_time():
     plt.axhline(avg_time, color="g")
     plt.title(f"3400 chunks (max 1 thread) bnl file; avg time {avg_time}s\nKerchunk-based Total run on 2.6GHz CPU: 12min")
     plt.grid()
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max1THRD_Sizes_vs_ReductionistResponseTimes.png")
+    plt.savefig(plotdir/"3400ChunksFile-max1THRD_Sizes_vs_ReductionistResponseTimes.png")
 
 
 def hist_reductionist_response():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_3400chunks-max150THRDS.txt", "r") as datafile:
+    with open(datadir/"reductionist_response_times_3400chunks-max150THRDS.txt", "r") as datafile:
         reductionist_times = [float(l) for l in datafile.readlines()]
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS-run2.txt", "r") as datafile:
+    with open(datadir/"chunk_times_3400chunks-max150THRDS-run2.txt", "r") as datafile:
         chunk_times = [float(l) for l in datafile.readlines()]
     plt.hist(reductionist_times, density=False, bins=50, color="r", label="Red. Time")
     plt.hist(chunk_times, density=False, bins=50, color="b", alpha=0.5, label="Tot. Chunk Time")
@@ -67,7 +70,7 @@ def hist_reductionist_response():
 
 
 def timeseries_reductionist_response():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_3400chunks-max1THRD.txt", "r") as datafile:
+    with open(datadir/"reductionist_response_times_3400chunks-max1THRD.txt", "r") as datafile:
         reductionist_times = [float(l) for l in datafile.readlines()]
     x = range(len(reductionist_times))
     plt.scatter(x, reductionist_times, color="r")
@@ -75,12 +78,12 @@ def timeseries_reductionist_response():
     plt.xlabel('Synthetic time')
     plt.ylabel('Reductionist Response Times per Chunk [s]')
     plt.title("3400 chunks (max 1 thread) bnl file\nRed. Time: response = request(session, url, request_data)")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max1THRD_Reductionist_Times_Timeseries.png")
+    plt.savefig(plotdir/"3400ChunksFile-max1THRD_Reductionist_Times_Timeseries.png")
     plt.close()
 
 
 def timeseries_chunk_sizes():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_sizes_3400chunks-max150THRDS.txt", "r") as datafile:
+    with open(datadir/"chunk_sizes_3400chunks-max150THRDS.txt", "r") as datafile:
         csizes = [float(l) / 1000. for l in datafile.readlines()]
     x = range(len(csizes))
     plt.scatter(x, csizes, color="g")
@@ -88,12 +91,12 @@ def timeseries_chunk_sizes():
     plt.xlabel('Synthetic time')
     plt.ylabel('Chunk Sizes [kb]')
     plt.title("3400 chunks (max 150 thread) bnl file")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRD_Chunks_Sizes_Timeseries.png")
+    plt.savefig(plotdir/"3400ChunksFile-max150THRD_Chunks_Sizes_Timeseries.png")
     plt.close()
 
 
 def timeseries_reductionist_response_threadsON():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/reductionist_response_times_3400chunks_NumThreadsOn50.txt", "r") as datafile:
+    with open(datadir/"reductionist_response_times_3400chunks_NumThreadsOn50.txt", "r") as datafile:
         reductionist_times = [float(l) for l in datafile.readlines()]
     x = range(len(reductionist_times))
     plt.scatter(x, reductionist_times, color="r")
@@ -101,56 +104,67 @@ def timeseries_reductionist_response_threadsON():
     plt.xlabel('Synthetic time')
     plt.ylabel('Reductionist Response Times per Chunk [s]')
     plt.title("3400 chunks (max 150 thread) bnl file W/ NUM_THREADS=50\nRed. Time: response = request(session, url, request_data)")
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRD_Reductionist_Times_Timeseries_wTHREADSON50.png")
+    plt.savefig(plotdir/"3400ChunksFile-max150THRD_Reductionist_Times_Timeseries_wTHREADSON50.png")
     plt.close()
 
 
-def hist_chunk_times_NN():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_ThreeReducts.txt", "r", encoding="utf-8") as datafile:
+def hist_chunk_times_NN(title=True, format='png'):
+    with open(datadir/"chunk_times_3400chunks-max150THRDS_ThreeReducts.txt", "r", encoding="utf-8") as datafile:
         data0 = [float(l) for l in datafile.readlines()]
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_ThreeReducts_NewNetork_OldProxy.txt", "r", encoding="utf-8") as datafile:
+    with open(datadir/"chunk_times_3400chunks-max150THRDS_ThreeReducts_NewNetork_OldProxy.txt", "r", encoding="utf-8") as datafile:
         data1 = [float(l) for l in datafile.readlines()]
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_ThreeReducts_NewNetork_NewProxy.txt", "r", encoding="utf-8") as datafile:
+    with open(datadir/"chunk_times_3400chunks-max150THRDS_ThreeReducts_NewNetork_NewProxy.txt", "r", encoding="utf-8") as datafile:
         data2 = [float(l) for l in datafile.readlines()]
-    plt.hist(data0, density=False, bins=100, label="oldNwk")
-    plt.hist(data1, density=False, bins=100, label="newNwk old proxy")
-    plt.hist(data2, density=False, bins=100, label="newNwk new proxy")
+    plt.hist(data0, density=False, bins=100, label="ON")
+    plt.hist(data1, density=False, bins=100, label="NN-OP")
+    plt.hist(data2, density=False, bins=100, label="NN-NP")
     plt.grid()
     plt.ylabel('Counts')
-    plt.xlabel('Chunk process time [s]')
+    plt.xlabel('Chunk process time [s] ) (R3)')
     # plt.ylim(0, 10)
     # plt.xlim(0, 10)
     # plt.axvline(np.mean(data1), color="b")
     # plt.axvline(np.mean(data2), color="k")
-    plt.title(f"3400 chunks (max 150 threads, 3x (activeh) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
+    if title:
+        plt.title(f"3400 chunks (max 150 threads, 3x (activeh) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
     plt.legend()
     # plt.show()
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRDS-3RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist_noxlim.png")
+    if format == 'png':
+        plt.savefig(plotdir/"3400ChunksFile-max150THRDS-3RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist_noxlim.png")
+    elif format == 'pdf':
+        plt.savefig(plotdir/"pdf/3400ChunksFile-max150THRDS-3RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist_noxlim.pdf")
+    else:
+        raise ValueError(f'Whatdaya mean {format}?')
     plt.close()
 
 
-def hist_chunk_times_NN_1Reduct():
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS.txt", "r", encoding="utf-8") as datafile:
+def hist_chunk_times_NN_1Reduct(title=True, format='png'):
+    with open(datadir/"chunk_times_3400chunks-max150THRDS.txt", "r", encoding="utf-8") as datafile:
         data0 = [float(l) for l in datafile.readlines()]
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_OneReducts_NewNetork_OldProxy.txt", "r", encoding="utf-8") as datafile:
+    with open(datadir/"chunk_times_3400chunks-max150THRDS_OneReducts_NewNetork_OldProxy.txt", "r", encoding="utf-8") as datafile:
         data1 = [float(l) for l in datafile.readlines()]
-    with open("/home/valeriu/testing_PyActiveStorage/datafiles/chunk_times_3400chunks-max150THRDS_OneReducts_NewNetork_NewProxy.txt", "r", encoding="utf-8") as datafile:
+    with open(datadir/"chunk_times_3400chunks-max150THRDS_OneReducts_NewNetork_NewProxy.txt", "r", encoding="utf-8") as datafile:
         data2 = [float(l) for l in datafile.readlines()]
-    plt.hist(data0, density=False, bins=100, label="oldNwk")
-    plt.hist(data1, density=False, bins=100, label="newNwk old proxy")
-    plt.hist(data2, density=False, bins=100, label="newNwk new proxy")
+    plt.hist(data0, density=False, bins=100, label="ON")
+    plt.hist(data1, density=False, bins=100, label="NN-OP")
+    plt.hist(data2, density=False, bins=100, label="NN-NP")
     plt.grid()
     plt.ylabel('Counts')
-    plt.xlabel('Chunk process time [s]')
+    plt.xlabel('Chunk process time [s] (R1)')
     # plt.ylim(0, 10)
     plt.xlim(0, 10)
     # plt.axvline(np.mean(data1), color="b")
     # plt.axvline(np.mean(data2), color="k")
-    plt.title(f"3400 chunks (max 150 threads, 1x (active) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
+    if title:
+        plt.title(f"3400 chunks (max 150 threads, 1x (active) Reductionist)\nmean chunk {np.round(np.mean(data0), 3)} - {np.round(np.mean(data1), 3)} - {np.round(np.mean(data2), 3)} s\nSTD chunk {np.round(np.std(data0), 3)} - {np.round(np.std(data1), 3)} - {np.round(np.std(data2), 3)} s")
     plt.legend()
     # plt.show()
-    plt.savefig("/home/valeriu/testing_PyActiveStorage/plots/3400ChunksFile-max150THRDS-1RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.png")
-    plt.close()
+    if format == 'png':
+        plt.savefig(plotdir/"3400ChunksFile-max150THRDS-1RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.png")
+    elif format == 'pdf':
+        plt.savefig(plotdir/"pdf/3400ChunksFile-max150THRDS-1RED-Machines_New-Old-Network-Proxy_Chunks_Times_Hist.pdf")
+    else:
+        raise ValueError(f'Whatdaya mean {format}?')
 
 # hist_chunk_times()
 # hist_chunk_sizes()
@@ -163,5 +177,5 @@ def hist_chunk_times_NN_1Reduct():
 # size_vs_time()
 # timeseries_reductionist_response()
 # hist_chunk_times()
-hist_chunk_times_NN()
-# hist_chunk_times_NN_1Reduct()
+hist_chunk_times_NN(title=False, format='pdf')
+hist_chunk_times_NN_1Reduct(title=False, format='pdf')
