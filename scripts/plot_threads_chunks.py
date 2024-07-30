@@ -112,7 +112,7 @@ def totalTimes_vs_maxnothreads_NewNetwork(title=True,format='png'):
     plt.scatter(threads, old_proxy)
     plt.plot(threads, old_proxy, label="NN-OP")
     plt.scatter(threads, new_proxy)
-    plt.plot(threads, new_proxy, label="NN-NN")
+    plt.plot(threads, new_proxy, label="NN-NP")
     plt.grid()
     plt.ylim(10, 1000)
     plt.semilogy()
