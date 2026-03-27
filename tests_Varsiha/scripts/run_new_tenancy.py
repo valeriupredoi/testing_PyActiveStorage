@@ -45,13 +45,15 @@ def test_https_file():
     """
     Run the test with parameterized file, variable, and slicing via https
     """
-
-    test_file_uri = "https://esgf.ceda.ac.uk/thredds/fileServer/esg_cmip6/CMIP6/AerChemMIP/MOHC/UKESM1-0-LL/ssp370SST-lowNTCF/r1i1p1f2/Amon/cl/gn/v20200420/cl_Amon_UKESM1-0-LL_ssp370SST-lowNTCF_r1i1p1f2_gn_201501-204912.nc"
-    active = Active(test_file_uri, ncvar="cl")
-    active._version = 1
+    active_storage_url = "https://reductionist.jasmin.ac.uk/"
+    test_file_uri = "https://esgf.ceda.ac.uk/thredds/fileServer/esg_cmip6/CMIP6/AerChemMIP/MOHC/UKESM1-0-LL/ssp370SST-lowNTCF/r1i1p1f2/Amon/cl/gn/v20200420/cl_Amon_UKESM1-0-LL_ssp370SST-lowNTCF_r1i1p1f2_gn_205001-209912.nc"
+    active = Active(test_file_uri, ncvar="cl",  active_storage_url=active_storage_url)
+    active._version = 2
     active._method = "min"
 
-    result = active[0:4, 0:1, 0:30, 0:30] 
+    result = active[0:4, 0:1, 0:30, 0:30][0] 
+
+    print(result)
 
     return result  
 
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     #----------------------------------------------------
 
     # Check if we got the right number of arguments
-  
+    """
     if len(sys.argv) < 4:
         print("Usage: python script.py <file> <var> <slices_string>")
         sys.exit(1)
@@ -78,9 +80,9 @@ if __name__ == "__main__":
                           for i in range(0, len(slice_data), 2))
 
     final_result = test_s3_file(target_file, target_var, active_slices)
-
+    """  
     #----------------------------------------------------
     #  https access- don't bother with the runTesting.sh, just do it manually
     #----------------------------------------------------  
 
-    #test_https_file()
+    test_https_file()
