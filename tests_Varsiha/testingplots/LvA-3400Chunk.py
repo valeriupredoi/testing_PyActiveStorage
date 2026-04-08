@@ -10,18 +10,13 @@ import importlib.util
 plt.rcParams['font.family'] = 'Arial'
 ROW_SPACING = 1.5
 
-META_TEXT = (
-    "File: ch330a.pc19790301-bnl.nc\n"
-    "Variable: UM_m01s16i202_vn1106\n"
-    "3400 Chunks, 17.96 GB"
-)
-
 # --- HELPER FUNCTIONS ---
 
 def getVals(path, array_name="real_times"):
     """Load a Python file at 'path' as a module and return the specified array."""
     file_path = Path(path)
     if not file_path.exists():
+        print(f"DEBUG: File not found at {file_path}") # This will tell you why it's empty
         return np.array([])
     spec = importlib.util.spec_from_file_location("module_from_file", file_path)
     module = importlib.util.module_from_spec(spec)
@@ -70,7 +65,7 @@ def plot_dual_hybrid_row(ax, y_pos, data_on, data_off, show_violins=True):
 
 # --- PRIMARY PLOTTING FUNCTIONS ---
 
-def generate_execution_plot(custom_data, save_path):
+def generate_execution_plot(custom_data,meta_text, save_path):
     fig, ax = plt.subplots(figsize=(12, 8))
     y_ticks, y_labels = [], []
 
@@ -110,16 +105,74 @@ def generate_execution_plot(custom_data, save_path):
     
     # Header & Legend
     ax.text(0.01, 0.98, "Reduction execution time relative to slice size", fontweight='bold', transform=ax.transAxes, fontsize=12, va='top')
-    ax.text(0.01, 0.945, META_TEXT, transform=ax.transAxes, fontsize=12, va='top', linespacing=1.5)
+    ax.text(0.01, 0.945, meta_text, transform=ax.transAxes, fontsize=12, va='top', linespacing=1.5)
     
     legend_el = [Line2D([0], [0], color="#fd5400", marker='o', lw=2, label='Active Storage'),
                  Line2D([0], [0], color='#939393', marker='o', lw=2, label='Local Storage ')]
-    ax.legend(handles=legend_el, loc='upper right', frameon=False, bbox_to_anchor=(0.95, 0.96))
+    ax.legend(handles=legend_el, loc='upper right',fontsize=12, frameon=False, bbox_to_anchor=(0.95, 0.98))
 
     plt.tight_layout()
     plt.savefig(save_path)
 
-def generate_ratio_plot(custom_data, save_path):
+
+def generate_execution_plot_64chunk(custom_data, meta_64,save_path):
+    # Note: Use linear scale and specific x-limits for this version
+    fig, ax = plt.subplots(figsize=(12, 8))
+    y_ticks, y_labels = [], []
+
+    for i, (d_on, d_off, label) in enumerate(custom_data):
+        # Skip empty placeholder if index 0 is empty
+        if len(d_on) == 0: continue
+        
+        y_pos = i * ROW_SPACING
+        plot_dual_hybrid_row(ax, y_pos, d_on, d_off)
+        
+        y_ticks.append(y_pos + 0.3)
+        y_labels.append(label)
+
+        if i < len(custom_data) - 1:
+            ax.axhline(y_pos + 1.15, color="#bbbbbb", lw=1.5, linestyle=':')
+
+        # Stats Text using the helper
+        s = calculate_stats(d_on, d_off)
+        if s:
+            labels_text = "Active:\nLocal:\nRatio:"
+            values_text = (
+                f"{s['mean_on']:>7.2f} ± {s['std_on']:>5.2f}\n"
+                f"{s['mean_off']:>7.2f} ± {s['std_off']:>5.2f}\n"
+                f"{s['ratio']:>7.2f} ± {s['ratio_std']:>5.2f}"
+            )
+            ax.text(0.835, y_pos + 0.3, labels_text, transform=ax.get_yaxis_transform(),
+                    fontsize=12, va='center', ha='right')
+            ax.text(0.84, y_pos + 0.3, values_text, transform=ax.get_yaxis_transform(),
+                    fontsize=12, va='center', ha='left', family='monospace')
+
+    # Specific limits for the 64-chunk plot
+    ax.set_ylim(-0.5, (len(custom_data) * ROW_SPACING) + 0.6)
+    ax.set_xlim(0, 50) # Linear scale as per your request
+    
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(y_labels, fontsize=12)
+    ax.set_xlabel('Execution Time (seconds)', fontsize=12)
+    ax.set_ylabel('Target (%)', fontsize=12)
+    
+    # Header 
+    ax.text(0.01, 0.98, "Reduction execution time relative to slice size", 
+            fontweight='bold', transform=ax.transAxes, fontsize=12, va='top')
+    ax.text(0.01, 0.945, meta_64, transform=ax.transAxes, 
+            fontsize=12, va='top', linespacing=1.5)
+    
+    # Legend - Adjusted upward slightly (1.02)
+    legend_el = [Line2D([0], [0], color="#fd5400", marker='o', lw=2, label='Active Storage'),
+                 Line2D([0], [0], color='#939393', marker='o', lw=2, label='Local Storage ')]
+    ax.legend(handles=legend_el, loc='upper right', frameon=False, fontsize=12,  
+              bbox_to_anchor=(0.95, 1.0))
+
+    plt.tight_layout()
+    plt.savefig(save_path)
+
+
+def generate_ratio_plot(custom_data, meta_text, upper_xlim, save_path):
     fig, ax = plt.subplots(figsize=(10, 8))
     
     labels, ratios, errors = [], [], []
@@ -142,12 +195,12 @@ def generate_ratio_plot(custom_data, save_path):
     ax.set_yticks(y_pos)
     ax.set_yticklabels(labels)
     ax.set_ylim(y_pos[0] - 1, y_pos[-1] + 2.5)
-    ax.set_xlim(-1, 45)
+    ax.set_xlim(-1, upper_xlim)
     ax.set_xlabel("Execution Time Ratio (Local / Active)")
     
     ax.text(0.01, 0.98, "Execution Time Ratio (Local/Active) relative to Slice Size", fontweight='bold', transform=ax.transAxes, fontsize=12, va='top')
-    ax.text(0.01, 0.945, META_TEXT, transform=ax.transAxes, fontsize=12, va='top', linespacing=1.5)
-    ax.legend(handles=[eb], labels=['Local/Active Ratio'], loc='upper right', frameon=False, bbox_to_anchor=(0.98, 0.96))
+    ax.text(0.01, 0.945, meta_text, transform=ax.transAxes, fontsize=12, va='top', linespacing=1.5)
+    ax.legend(handles=[eb], labels=['Local/Active Ratio'], loc='upper right', fontsize=12, frameon=False, bbox_to_anchor=(0.98, 0.96))
 
     plt.tight_layout()
     plt.savefig(save_path)
@@ -169,10 +222,37 @@ def main():
     custom_data = [(getVals(f"{base}{act}"), getVals(f"{base}{loc}"), lbl) for act, loc, lbl in file_registry]
     custom_data.append((np.array([1, 2, 3]), np.array([1, 2, 3]), "100"))
 
-    generate_execution_plot(custom_data, "testExecutionTime_Local_v_Active.pdf")
-    generate_ratio_plot(custom_data, "testRatio_Analysis_Local_v_Active.pdf")
+    meta_label = (
+        "File: ch330a.pc19790301-bnl.nc\n"
+        "Variable: UM_m01s16i202_vn1106\n"
+        "3400 Chunks, 17.96 GB"
+    )
 
-    plt.show()
+    generate_execution_plot(custom_data, meta_label, "testExecutionTime_Local_v_Active.pdf")
+    generate_ratio_plot(custom_data, meta_label, 45, "testRatio_Analysis_Local_v_Active.pdf")
+
+    #plt.show()
+
+    base_coarse = "../output/Local_v_Active/f_ch330a.pc19790301-def_64Chunk/"
+
+    file_registry_coarse = [
+        ("Target1_Active_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_8_0_413_0_551_20260407_133856.py"     , "Target1_Local_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_8_0_413_0_551_20260407_134059.py"     , "1"),
+        ("Target5_Active_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_14_0_707_0_942_20260407_134641.py"    , "Target5_Local_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_14_0_707_0_942_20260407_134423.py"    , "5"),
+        ("Target10_Active_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_18_0_891_0_1188_20260407_134816.py"  , "Target10_Local_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_18_0_891_0_1188_20260407_135427.py"  ,"10"),
+        ("Target25_Active_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_25_0_1209_0_1612_20260407_140511.py" , "Target25_Local_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_25_0_1209_0_1612_20260407_141132.py" ,"25"),
+        ("Target50_Active_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_31_0_1525_0_2032_20260407_142644.py" , "Target50_Local_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_31_0_1525_0_2032_20260407_142408.py" ,"50"),
+        ("Target75_Active_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_36_0_1753_0_2337_20260407_142850.py" , "Target75_Local_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_36_0_1753_0_2337_20260407_144115.py" ,"75"),
+        ("Target100_Active_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_40_0_1920_0_2560_20260407_151811.py", "Target100_Local_f_ch330a.pc19790301-def.nc_var_UM_m01s16i202_vn1106_slice_0_40_0_1920_0_2560_20260407_150224.py","100")
+    ]
+    custom_data_coarse = [(getVals(f"{base_coarse}{act}"), getVals(f"{base_coarse}{loc}"), lbl) for act, loc, lbl in file_registry_coarse]
+    meta_label_coarse = (
+        "File: ch330a.pc19790301-def.nc\n"
+        "Variable: UM_m01s16i202_vn1106\n"
+        "64 Chunks, 17.81 GB"
+    )
+    generate_ratio_plot(custom_data_coarse, meta_label_coarse, 10, "test_coarseRatio_Analysis_Local_v_Active.pdf")
+    generate_execution_plot_64chunk(custom_data_coarse, meta_label_coarse,"testCoarseExecutionTime_Local_v_Active.pdf")
+
 
 if __name__ == "__main__":
     main()
