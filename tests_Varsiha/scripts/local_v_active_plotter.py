@@ -30,16 +30,37 @@ def calculate_stats(data_on, data_off):
         
     m_on, s_on = np.mean(data_on), np.std(data_on)
     m_off, s_off = np.mean(data_off), np.std(data_off)
-    
     ratio = m_off / m_on
+
     # Propagation of error formula for a quotient
     ratio_std = ratio * np.sqrt((s_off/m_off)**2 + (s_on/m_on)**2)
-    
     return {
         "mean_on": m_on, "std_on": s_on,
         "mean_off": m_off, "std_off": s_off,
         "ratio": ratio, "ratio_std": ratio_std
     }
+
+
+def calculate_array_ratios(val1_arr, err1_arr, val2_arr, err2_arr):
+    """
+    Calculates ratios and propagated uncertainties for arrays of data.
+    
+    Returns:
+        tuple: (ratio_array, uncertainty_array)
+    """
+    # Convert inputs to numpy arrays for vectorized math
+    v1, e1 = np.array(val1_arr), np.array(err1_arr)
+    v2, e2 = np.array(val2_arr), np.array(err2_arr)
+    
+    # 1. Calculate the ratios
+    ratios = v1 / v2
+    
+    # 2. Calculate propagated uncertainty: R * sqrt((e1/v1)^2 + (e2/v2)^2)
+    # np.sqrt and **2 work element-wise across the entire array
+    uncertainties = np.abs(ratios) * np.sqrt((e1 / v1)**2 + (e2 / v2)**2)
+    
+    return ratios, uncertainties
+
 
 def plot_dual_hybrid_row(ax, y_pos, data_on, data_off, show_violins=True):
     """Plots the violin and error bars for a single row."""
@@ -69,6 +90,9 @@ def generate_execution_plot(custom_data,meta_text, save_path):
     fig, ax = plt.subplots(figsize=(12, 8))
     y_ticks, y_labels = [], []
 
+    summary_stats = {"on_means": [], "on_stds": [], "off_means": [], "off_stds": []}
+
+
     for i, (d_on, d_off, label) in enumerate(custom_data):
         y_pos = i * ROW_SPACING
         plot_dual_hybrid_row(ax, y_pos, d_on, d_off)
@@ -88,6 +112,11 @@ def generate_execution_plot(custom_data,meta_text, save_path):
                 f"{s['mean_off']:>7.2f} ± {s['std_off']:>5.2f}\n"
                 f"{s['ratio']:>7.2f} ± {s['ratio_std']:>5.2f}"
             )
+            summary_stats["on_means"].append(s['mean_on'])
+            summary_stats["on_stds"].append(s['std_on'])
+            summary_stats["off_means"].append(s['mean_off'])
+            summary_stats["off_stds"].append(s['std_off'])
+
             ax.text(0.835, y_pos + 0.3, labels_text, transform=ax.get_yaxis_transform(),
                     fontsize=12, va='center', ha='right')
             ax.text(0.84, y_pos + 0.3, values_text, transform=ax.get_yaxis_transform(),
@@ -113,6 +142,7 @@ def generate_execution_plot(custom_data,meta_text, save_path):
 
     plt.tight_layout()
     plt.savefig(save_path)
+    return summary_stats
 
 
 def generate_execution_plot_64chunk(custom_data, meta_64,save_path):
@@ -133,6 +163,8 @@ def generate_execution_plot_64chunk(custom_data, meta_64,save_path):
         if i < len(custom_data) - 1:
             ax.axhline(y_pos + 1.15, color="#bbbbbb", lw=1.5, linestyle=':')
 
+        summary_stats = {"on_means": [], "on_stds": [], "off_means": [], "off_stds": []}
+
         # Stats Text using the helper
         s = calculate_stats(d_on, d_off)
         if s:
@@ -142,6 +174,12 @@ def generate_execution_plot_64chunk(custom_data, meta_64,save_path):
                 f"{s['mean_off']:>7.2f} ± {s['std_off']:>5.2f}\n"
                 f"{s['ratio']:>7.2f} ± {s['ratio_std']:>5.2f}"
             )
+            summary_stats["on_means"].append(s['mean_on'])
+            summary_stats["on_stds"].append(s['std_on'])
+            summary_stats["off_means"].append(s['mean_off'])
+            summary_stats["off_stds"].append(s['std_off'])
+
+
             ax.text(0.835, y_pos + 0.3, labels_text, transform=ax.get_yaxis_transform(),
                     fontsize=12, va='center', ha='right')
             ax.text(0.84, y_pos + 0.3, values_text, transform=ax.get_yaxis_transform(),
@@ -170,6 +208,7 @@ def generate_execution_plot_64chunk(custom_data, meta_64,save_path):
 
     plt.tight_layout()
     plt.savefig(save_path)
+    return summary_stats
 
 
 def generate_ratio_plot(custom_data, meta_text, upper_xlim, save_path):
@@ -197,6 +236,8 @@ def generate_ratio_plot(custom_data, meta_text, upper_xlim, save_path):
     ax.set_ylim(y_pos[0] - 1, y_pos[-1] + 2.5)
     ax.set_xlim(-1, upper_xlim)
     ax.set_xlabel("Execution Time Ratio (Local / Active)")
+    ax.set_ylabel('Target (%)', fontsize=12)
+    
     
     ax.text(0.01, 0.98, "Execution Time Ratio (Local/Active) relative to Slice Size", fontweight='bold', transform=ax.transAxes, fontsize=12, va='top')
     ax.text(0.01, 0.945, meta_text, transform=ax.transAxes, fontsize=12, va='top', linespacing=1.5)
@@ -205,9 +246,46 @@ def generate_ratio_plot(custom_data, meta_text, upper_xlim, save_path):
     plt.tight_layout()
     plt.savefig(save_path)
 
+
+def generate_ratio_chunk_comparison_plot(ratio_vals, meta_text, upper_xlim,  save_path, myColor="#062568", myTitle = "Execution Time Ratio (3400 Chunk/ 64 Chunk) relative to Slice Size"):
+    fig, ax = plt.subplots(figsize=(10, 8))
+    
+    labels = ["1", "5", "10", "25", "50", "75"]
+    ratios = ratio_vals[0]
+    errors = ratio_vals[1]
+
+    y_pos = np.arange(len(labels)) * ROW_SPACING
+    eb = ax.errorbar(ratios, y_pos, xerr=errors, fmt='o', color=myColor, elinewidth=2, capsize=5, markersize=8)
+
+    for i, (ratio, err) in enumerate(zip(ratios, errors)):
+        ax.text(ratio-0.3, y_pos[i]-0.4, f"{ratio:.2f} ± {err:.2f}", fontsize=10,  ha='left', color=myColor)
+
+    for y in y_pos[:-1]:
+        ax.axhline(y + (ROW_SPACING/2), color="#eeeeee", lw=1, zorder=0)
+
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(labels)
+    ax.set_ylim(y_pos[0] - 1, y_pos[-1] + 2.5)
+    ax.set_xlim(-1, upper_xlim)
+    ax.set_xlabel("Execution Time Ratio")
+    ax.set_ylabel('Target (%)', fontsize=12)
+    
+    ax.text(0.01, 0.98, myTitle, fontweight='bold', transform=ax.transAxes, fontsize=12, va='top')
+    ax.text(0.01, 0.945, meta_text, transform=ax.transAxes, fontsize=12, va='top', linespacing=1.5)
+    ax.legend(handles=[eb], labels=['Ratio'], loc='upper right', fontsize=12, frameon=False, bbox_to_anchor=(0.98, 0.96))
+
+    plt.tight_layout()
+    plt.savefig(save_path)
+
+
+
+
+
 # --- MAIN EXECUTION ---
 
 def main():
+
+    # --- 3400 Chunk: Local v Active  ---
     base = "../output/Local_v_Active/f_ch330a.pc19790301-bnl_3400Chunk/"
     
     file_registry = [
@@ -228,11 +306,11 @@ def main():
         "3400 Chunks, 17.96 GB"
     )
 
-    generate_execution_plot(custom_data, meta_label, "ExecutionTime_Local_v_Active_3400Chunk.pdf")
+    stats_3400 = generate_execution_plot(custom_data, meta_label, "ExecutionTime_Local_v_Active_3400Chunk.pdf")
     generate_ratio_plot(custom_data, meta_label, 45, "Ratio_Analysis_Local_v_Active_3400Chunk.pdf")
 
     #plt.show()
-
+    # --- 64 Chunk: Local v Active  ---
     base_coarse = "../output/Local_v_Active/f_ch330a.pc19790301-def_64Chunk/"
 
     file_registry_coarse = [
@@ -250,9 +328,39 @@ def main():
         "Variable: UM_m01s16i202_vn1106\n"
         "64 Chunks, 17.81 GB"
     )
+    
     generate_ratio_plot(custom_data_coarse, meta_label_coarse, 10, "Ratio_Analysis_Local_v_Active_64Chunk.pdf")
-    generate_execution_plot_64chunk(custom_data_coarse, meta_label_coarse,"ExecutionTime_Local_v_Active_64Chunk.pdf")
+    stats_64 = generate_execution_plot_64chunk(custom_data_coarse, meta_label_coarse,"ExecutionTime_Local_v_Active_64Chunk.pdf")
 
+
+
+
+
+    #    --- AUTOMATED: Active Storage 3400 v 64 ---
+    # We use the 'on' values (Active) from both sets
+    # Note: We slice [:6] to ensure both have the same length if 3400 is missing the "100" target
+    ratio_values_active = calculate_array_ratios(
+        stats_3400["on_means"][:6], stats_3400["on_stds"][:6], 
+        stats_64["on_means"][:6],   stats_64["on_stds"][:6]
+    )
+    
+    generate_ratio_chunk_comparison_plot(
+        ratio_values_active, "Comparing Active Storage", 5, 
+        "ActiveChunkingRatio.pdf", myColor="#028F00"
+    )
+
+    # --- AUTOMATED: Local Storage 3400 v 64 ---
+    # We use the 'off' values (Local) from both sets
+    ratio_values_local = calculate_array_ratios(
+        stats_3400["off_means"][:6], stats_3400["off_stds"][:6], 
+        stats_64["off_means"][:6],   stats_64["off_stds"][:6]
+    )
+
+    generate_ratio_chunk_comparison_plot(
+        ratio_values_local, "Comparing Local Storage", 25, 
+        "LocalChunkingRatio.pdf", myColor="#028F00"
+    )
 
 if __name__ == "__main__":
     main()
+

@@ -1,8 +1,8 @@
 #!/bin/bash
 export PYTHONWARNINGS="ignore:Unverified HTTPS request"
 # --- CONFIGURATION ---
-TARGET_FILE="ch330a.pc19790301-def.nc"             
-TARGET_VAR="UM_m01s16i202_vn1106"
+TARGET_FILE="cl_Amon_UKESM1-0-LL_ssp370SST-lowNTCF_r1i1p1f2_gn_205001-209912.nc"
+TARGET_VAR="cl"
 
 # Define slices as a simple comma-separated string: start,stop,start,stop...
 #Target 1     
@@ -18,16 +18,15 @@ TARGET_VAR="UM_m01s16i202_vn1106"
 #Target 75    
 #SLICES_STR="0,36,0,1753,0,2337"
 #Target 100
-SLICES_STR="0,40,0,1920,0,2560"
+#SLICES_STR="0,40,0,1920,0,2560"
 
-TEST_NO="Target100_Active"
+SLICES_STR="0,300,0,85,0,144,0,192"
+
+TEST_NO="test_s3_Local"
 # Automatically create a unique name for this run
 BASE_NAME="f_${TARGET_FILE}_var_${TARGET_VAR}_slice_${SLICES_STR//,/_}"
-#LOGFILE="output/Local_v_Active/test${TEST_NO}_${BASE_NAME}.log.output"
-#PY_OUT="output/Local_v_Active/test${TEST_NO}_${BASE_NAME}.py"
-
-LOGFILE="output/Local_v_Active/f_ch330a.pc19790301-def_64Chunk/${TEST_NO}_${BASE_NAME}.log.output"
-PY_OUT="output/Local_v_Active/f_ch330a.pc19790301-def_64Chunk/${TEST_NO}_${BASE_NAME}.py"
+LOGFILE="output/s3_v_https/${TEST_NO}_${BASE_NAME}.log.output"
+PY_OUT="output/s3_v_https/${TEST_NO}_${BASE_NAME}.py"
 
 > "$LOGFILE"
 
