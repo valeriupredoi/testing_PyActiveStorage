@@ -9,6 +9,7 @@
 
 \usepackage{xcolor,makecell}
 \usepackage{hyperref}
+\usepackage{multirow}
 \date{\today}
 
 \begin{document}
@@ -73,10 +74,65 @@ Scripts and data can be found in the following \href{https://github.com/valeriup
 
 
 
+\section{Comparing PyActiveStorage with respect to Local Storage}
+
+The execution time of PyActiveStorage to perform reductions compared to Local storage is completed for a file and dataset. The proportion of the file tested us varied by so called target percentages in order to see how the reductions scale when on a small to larger percentage of the file. The first results are completed on a file with 3400 chunks, with more details on the dataset and file below in Table \ref{tab:FileInfo_ch330a.pc19790301-bnl-def.nc}. The second file the same as the first file but with a coarser chunking of 64 chunks. 
+
+
+\begin{table}[h!] 
+    \centering 
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{lcc}  \hline
+        \textbf{File}                   & \texttt{ch330a.pc19790301-bnl.nc}    & \texttt{ch330a.pc19790301-def.nc}   \\  
+        \textbf{Filesize}                   & 17.96  GB  & 17.81  GB   \\  
+        \textbf{Dataset}                & \texttt{UM\_m01s16i202\_vn1106}                 &  \texttt{UM\_m01s16i202\_vn1106}                \\ 
+        \textbf{Shape}                  & (40, 1920, 2560)                                &  (40, 1920, 2560)                               \\ 
+        \textbf{Chunk shape}            & (4, 113, 128)                                   &  (10, 480, 640)                                 \\ 
+        \textbf{Chunks per axis}        & [10, 17, 20]                                    &  [4, 4, 4]                                      \\ 
+        \textbf{Number of chunks} & 3400                                            &  64                                             \\  \hline
+    \end{tabular} 
+    \caption{Meta information about the \texttt{ch330a.pc19790301-bnl.nc} and  \texttt{ch330a.pc19790301-def.nc} files for the \texttt{UM\_m01s16i202\_vn1106} dataset.} 
+    \label{tab:FileInfo_ch330a.pc19790301-bnl-def.nc} 
+\end{table}
+
+
+
+
+
+
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{clc c c cccc}
+        \hline
+        \multirow{2}{*}{\makecell{Target\\ (\%)}} & \multirow{2}{*}{Slice Range} & \multirow{2}{*}{\makecell{Actual \\ (\%)}} & \multicolumn{2}{c}{nIter} & \multicolumn{3}{c}{Execution Time (s)} \\ 
+        &  &  & Active & Local & Active & Local & Active/Local \\ \hline
+         100     & [0:40, 0:1920, 0:2560]   & 100    &  .          & .              & .   & .   &  . \\
+         75      & [0:36, 0:1753, 0:2337]   & 74.95    &  5          & 5            & 15.73 $\pm$   6.56   & 639.55 $\pm$   0.50 &  40.67  $\pm$  1.35 \\
+         50      & [0:31, 0:1525, 0:2032]   & 48.74    &  5          & 5            & 15.02 $\pm$   8.74   & 526.50 $\pm$   0.74 &  35.05  $\pm$  1.83 \\
+         25      & [0:25, 0:1209, 0:1612]   & 24.78    &  5          & 5            & 14.40 $\pm$  21.80   & 384.21 $\pm$   0.26 &  26.69  $\pm$  1.59 \\        
+         10      & [0:18, 0:891, 0:1188]    & 9.70     & 10          & 10           & 14.55 $\pm$  10.77   & 138.09 $\pm$   0.77 &   9.49  $\pm$  0.90 \\
+         5       & [0:14, 0:707, 0:942]     & 4.74     & 10          & 10           & 14.92 $\pm$   2.57   & 108.50 $\pm$   1.74 &   7.27  $\pm$  0.87 \\
+         1       & [0:8, ~0:413, 0:551]      & 0.926    & 30          & 30           & 13.97 $\pm$   0.38   &  32.20 $\pm$   0.50 &   2.30  $\pm$  0.09 \\         \hline
+    \end{tabular}
+    \caption{The \texttt{ch330a.pc19790301-bnl.nc} file is tested at varying target file percentage for the and \texttt{UM\_m01s16i202\_vn1106} dataset, where this file has 3400 chunks. The slicing applied to achieve the target are shown with the actual percentage this represents. The number of iterations applied to measure the execution time when running with PyActiveStorage or Local storage are provided. Results of the execution time are provided for both tests and the ratio between the Local and PyActiveStorage performance.}
+    \label{tab:Local_v_Active_3500_Settings}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
 \section{Test Conditions \& Results}
 
 In order to understand the performance, multiple iterations of a given test are completed in order to fill histograms and evaluate the average performance. Caching of the data will directly influence its performance. Therefore, an initial ``cold" run is ran such that for the following ``warm" runs, the caching of the data is already present on the Reductionist. Typically 60 warm runs are recorded, however if a process was very slow, it was capped at an earlier number of iterations. This will be indicated in the respective testing sections. Unless stated otherwise, tests are performed with the number of maximum threads is set to 100, the method applied is \texttt{min} and the data file is retrieved from the \texttt{s3} object store.
-
 
 %-----------------------------------------------------------------------------------
 %                          TEST 1
@@ -407,9 +463,28 @@ Test 9 is the same as Test 5 except in how the data is read in. Test 5 uses the 
 \end{table}
 
 
+%-----------------------------------------------------------------------------------
+%                          TEST 10
+%-----------------------------------------------------------------------------------
 
+\subsection{Test 10}
 
-
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{cc}
+        \hline
+        \textbf{Results} & Test 10                \\ \hline
+        Real Time [s]    &  16.346  $\pm$ 0.619  \\
+        User Time [s]    &  1.756   $\pm$ 0.122  \\
+        Sys Time [s]     &  0.971   $\pm$ 0.069  \\
+        Wait Time [s]    &  13.620  $\pm$ 0.518  \\
+        Memory [MB]      &  333.869 $\pm$ 8.949 \\
+        CPU Util [\%]    &  16.675  $\pm$ 0.867  \\
+        \hline
+    \end{tabular}
+    \caption{Test 10 Results}
+    \label{tab:T10_Results}
+\end{table}
  
 
 
