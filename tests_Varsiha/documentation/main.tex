@@ -9,6 +9,8 @@
 
 \usepackage{xcolor,makecell}
 \usepackage{hyperref}
+
+\usepackage{subcaption} % in preamble
 \usepackage{multirow}
 \date{\today}
 
@@ -70,14 +72,24 @@ Testing undertaken to demonstrate performance of \texttt{PyActiveStorage}, and t
 
 Scripts and data can be found in the following \href{https://github.com/valeriupredoi/testing_PyActiveStorage/tree/main/tests_Varsiha}{Git repository}.
 
+Tests are completed with the following versions:
+\begin{table}[h!] 
+    \centering 
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{cccc}  \hline
+        Name            &   Version                 & Build           & Channel \\ \hline
+        \texttt{pyfive}          &     1.1.1                 &   pyhd8ed1ab\_2  &   conda-forge \\
+        \texttt{pyactivestorage} &     0.7.0.dev2+gf4516e6a8 &   pypi\_0        &   pypi \\ \hline
+    \end{tabular} 
+    \caption{Version Information on libraries} 
+    \label{tab:LibraryVersionInfo} 
+\end{table}
+
 \newpage
-
-
 
 \section{Comparing PyActiveStorage with respect to Local Storage}
 
-The execution time of PyActiveStorage to perform reductions compared to Local storage is completed for a file and dataset. The proportion of the file tested us varied by so called target percentages in order to see how the reductions scale when on a small to larger percentage of the file. The first results are completed on a file with 3400 chunks, with more details on the dataset and file below in Table \ref{tab:FileInfo_ch330a.pc19790301-bnl-def.nc}. The second file the same as the first file but with a coarser chunking of 64 chunks. 
-
+The execution time of PyActiveStorage to perform data reductions are compared to reductions performed in local storage. For a given file and dataset tested, the proportion of the file tested is varied by so called target percentages. This allows for one to observe how the reductions scales with the percentage of the sliced file. The first results are completed on a file with 3400 chunks and the second file the same as the first file but with a coarser chunking of 64 chunks. Details on the dataset and respective files are presented in  Table \ref{tab:FileInfo_ch330a.pc19790301-bnl-def.nc}. The following tests are performed with datasets accessed via the \texttt{https} and \texttt{s3} protocols to also compare how this impacts the execution time. 
 
 \begin{table}[h!] 
     \centering 
@@ -95,38 +107,157 @@ The execution time of PyActiveStorage to perform reductions compared to Local st
     \label{tab:FileInfo_ch330a.pc19790301-bnl-def.nc} 
 \end{table}
 
+The target slicing of the file is shown in Table \ref{tab:Local_v_Active_FileSlicing}, with the exact slicing applied to each axis shown along side the exact percentage of the slicing performed on the file. 
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{ccc}
+        \hline
+        Target (\%) & Slice Range              & Actual (\%) \\ \hline 
+         100        & [0:40, 0:1920, 0:2560]   & 100         \\
+         75         & [0:36, 0:1753, 0:2337]   & 74.95       \\
+         50         & [0:31, 0:1525, 0:2032]   & 48.74       \\
+         25         & [0:25, 0:1209, 0:1612]   & 24.78       \\        
+         10         & [0:18, 0:891, 0:1188]    & 9.70        \\
+         5          & [0:14, 0:707, 0:942]     & 4.74        \\
+         1          & [0:8, ~0:413, 0:551]     & 0.926       \\ \hline
+    \end{tabular}
+    \caption{The \texttt{ch330a.pc19790301-bnl.nc} file is tested at varying target file percentage for the and \texttt{UM\_m01s16i202\_vn1106} dataset, where this file has 3400 chunks. The slicing applied to achieve the target are shown with the actual percentage this represents.}
+    \label{tab:Local_v_Active_FileSlicing}
+\end{table}
 
 
+The results are obtained by running the same reduction multiple times and averaging over the results in order to account for fluctuations in the network speed. Due to the time taken to run over large slices, fewer iterations are ran for the larger target percentage tests. The results shown in Figure \ref{fig:ExecutionTime_Local_v_Active_3400Chunk} for the 3400 chunked file and in Figure \ref{fig:ExecutionTime_Local_v_Active_64Chunk} for the 64 chunk file. It is clear when comparing both figures that having fewer chunks allows for data reductions to be performed faster. In both cases the reductions done using PyActiveStorage are significantly faster, especially when looking at the ratio in the execution time for Local with respect to Active storage. The ratio grows with the target file size, demonstrating the advantage to performing reductions with the PyActiveStorage tool. For completeness Tables \ref{tab:ExecutionTime_Local_v_Active_3400Chunk} and \ref{tab:ExecutionTime_Local_v_Active_64Chunk} list the average execution times and the number of iterations ran for the varying target sizes.  
+The ratios between Local and Active storage for varying target slices are shown in Figure \ref{fig:Ratio_Execution_Time_LvA} for visualisation. The ratio between the two files execution time for a given storage type, are visualised in Figure \ref{fig:Ratio_Execution_Time_Chunk}, showing that the active storage is independent of the target size, whereas for local storage, this ratio increases with target size. 
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ExecutionTime_Local_v_Active_3400Chunk.pdf}
+    \caption{Execution time results of performing data reductions on the file \texttt{ch330a.pc19790301-bnl.nc} which has 3400 chunks. Reductions on the dataset in Active storage compared to reductions completed in local storage. Values shown for varying Target percentage of the file, with the average execution time for local storage, active storage, and the ratio of Local/Active shown on the right hand side.}
+    \label{fig:ExecutionTime_Local_v_Active_3400Chunk}
+\end{figure}
+
+\begin{table}[h!]
+    \centering
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{cccccc}
+        \hline
+& \multicolumn{2}{c}{nIter} & \multicolumn{3}{c}{Execution Time (s)} \\ 
+         Target (\%) & Active & Local & Active               & Local               & Local/Active        \\ \hline
+          100        &  .     & .     & .                    & .                   &  .                  \\
+          75         &  5     & 5     & 15.73 $\pm$   6.56   & 639.55 $\pm$   0.50 &  40.67  $\pm$  1.35 \\
+          50         &  5     & 5     & 15.02 $\pm$   8.74   & 526.50 $\pm$   0.74 &  35.05  $\pm$  1.83 \\
+          25         &  5     & 5     & 14.40 $\pm$  21.80   & 384.21 $\pm$   0.26 &  26.69  $\pm$  1.59 \\       
+          10         & 10     & 10    & 14.55 $\pm$  10.77   & 138.09 $\pm$   0.77 &   9.49  $\pm$  0.90 \\
+          5          & 10     & 10    & 14.92 $\pm$   2.57   & 108.50 $\pm$   1.74 &   7.27  $\pm$  0.87 \\
+          1          & 30     & 30    & 13.97 $\pm$   0.38   &  32.20 $\pm$   0.50 &   2.30  $\pm$  0.09 \\ \hline
+    \end{tabular}
+    \caption{The number of iterations applied to measure the execution time when running with PyActiveStorage or Local storage are provided. Results of the execution time are provided for both tests and the ratio between the Local and PyActiveStorage performance.}
+    \label{tab:ExecutionTime_Local_v_Active_3400Chunk}
+\end{table}
+
+\clearpage
 
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ExecutionTime_Local_v_Active_64Chunk.pdf }
+    \caption{Execution time results of performing data reductions on the file \texttt{ch330a.pc19790301-def.nc} which has 64 chunks. Reductions on the dataset in Active storage compared to reductions completed in local storage. Values shown for varying Target percentage of the file, with the average execution time for local storage, active storage, and the ratio of Local/Active shown on the right hand side.}
+    \label{fig:ExecutionTime_Local_v_Active_64Chunk}
+\end{figure}
 
 
 \begin{table}[h!]
     \centering
     \renewcommand{\arraystretch}{1.1}
-    \begin{tabular}{clc c c cccc}
+    \begin{tabular}{cccccc}
         \hline
-        \multirow{2}{*}{\makecell{Target\\ (\%)}} & \multirow{2}{*}{Slice Range} & \multirow{2}{*}{\makecell{Actual \\ (\%)}} & \multicolumn{2}{c}{nIter} & \multicolumn{3}{c}{Execution Time (s)} \\ 
-        &  &  & Active & Local & Active & Local & Active/Local \\ \hline
-         100     & [0:40, 0:1920, 0:2560]   & 100    &  .          & .              & .   & .   &  . \\
-         75      & [0:36, 0:1753, 0:2337]   & 74.95    &  5          & 5            & 15.73 $\pm$   6.56   & 639.55 $\pm$   0.50 &  40.67  $\pm$  1.35 \\
-         50      & [0:31, 0:1525, 0:2032]   & 48.74    &  5          & 5            & 15.02 $\pm$   8.74   & 526.50 $\pm$   0.74 &  35.05  $\pm$  1.83 \\
-         25      & [0:25, 0:1209, 0:1612]   & 24.78    &  5          & 5            & 14.40 $\pm$  21.80   & 384.21 $\pm$   0.26 &  26.69  $\pm$  1.59 \\        
-         10      & [0:18, 0:891, 0:1188]    & 9.70     & 10          & 10           & 14.55 $\pm$  10.77   & 138.09 $\pm$   0.77 &   9.49  $\pm$  0.90 \\
-         5       & [0:14, 0:707, 0:942]     & 4.74     & 10          & 10           & 14.92 $\pm$   2.57   & 108.50 $\pm$   1.74 &   7.27  $\pm$  0.87 \\
-         1       & [0:8, ~0:413, 0:551]      & 0.926    & 30          & 30           & 13.97 $\pm$   0.38   &  32.20 $\pm$   0.50 &   2.30  $\pm$  0.09 \\         \hline
+& \multicolumn{2}{c}{nIter} & \multicolumn{3}{c}{Execution Time (s)} \\ 
+         Target (\%) & Active & Local & Active               & Local               & Local/Active        \\ \hline
+          100        & 19     & 19    & 4.58 $\pm$ 0.30      & 36.41 $\pm$ 0.86    & 7.95 $\pm$ 0.56     \\
+          75         & 19     & 19    & 5.09 $\pm$ 0.38      & 36.32 $\pm$ 0.35    & 7.13 $\pm$ 0.54     \\
+          50         & 19     & 19    & 4.98 $\pm$ 0.41      & 36.33 $\pm$ 0.38    & 7.30 $\pm$ 0.61     \\
+          25         & 19     & 19    & 5.18 $\pm$ 2.14      & 18.06 $\pm$ 0.82    & 3.49 $\pm$ 1.45     \\       
+          10         & 19     & 19    & 4.48 $\pm$ 0.12      & 8.87 $\pm$ 0.26     & 1.98 $\pm$ 0.08     \\
+          5          & 19     & 19    & 4.40 $\pm$ 0.14      & 8.57 $\pm$ 0.32     & 1.95 $\pm$ 0.10     \\
+          1          & 19     & 19    & 4.93 $\pm$ 0.53      & 5.48 $\pm$ 0.61     & 1.11 $\pm$ 0.17     \\ \hline
     \end{tabular}
-    \caption{The \texttt{ch330a.pc19790301-bnl.nc} file is tested at varying target file percentage for the and \texttt{UM\_m01s16i202\_vn1106} dataset, where this file has 3400 chunks. The slicing applied to achieve the target are shown with the actual percentage this represents. The number of iterations applied to measure the execution time when running with PyActiveStorage or Local storage are provided. Results of the execution time are provided for both tests and the ratio between the Local and PyActiveStorage performance.}
-    \label{tab:Local_v_Active_3500_Settings}
+    \caption{The number of iterations applied to measure the execution time when running with PyActiveStorage or Local storage are provided. Results of the execution time are provided for both tests and the ratio between the Local and PyActiveStorage performance.}
+    \label{tab:ExecutionTime_Local_v_Active_64Chunk}
+\end{table}
+
+\begin{figure}[h!]
+    \centering
+    % First Subfigure
+    \begin{subfigure}{0.8\textwidth} % Increased width for vertical stacking
+        \centering
+        \includegraphics[width=\linewidth]{figures/Ratio_Analysis_Local_v_Active_3400Chunk.pdf}
+        \caption{File of 3400 chunks}
+    \end{subfigure}
+    
+    \vspace{1em} % Adds a little vertical space between the images
+
+    % Second Subfigure
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/Ratio_Analysis_Local_v_Active_64Chunk.pdf}
+        \caption{File of 64 chunks}
+    \end{subfigure}
+    
+    \caption{Ratio of execution time comparing local and active storage for the same file and dataset but with a different chunking structure.}
+    \label{fig:Ratio_Execution_Time_LvA}
+\end{figure}
+ 
+\clearpage
+
+\begin{figure}[h!]
+    \centering
+    % First Subfigure
+    \begin{subfigure}{0.8\textwidth} % Increased width for vertical stacking
+        \centering
+        \includegraphics[width=\linewidth]{figures/ActiveChunkingRatio.pdf}
+        \caption{Active Storage}
+    \end{subfigure}
+    
+    \vspace{1em} % Adds a little vertical space between the images
+
+    % Second Subfigure
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/LocalChunkingRatio.pdf}
+        \caption{Local Storage}
+    \end{subfigure}
+    \caption{Ratio of execution time comparing different chunking, for a given storage setting.}
+    \label{fig:Ratio_Execution_Time_Chunk}
+\end{figure}
+ 
+\clearpage
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|c|c|c|}
+\hline
+\textbf{Dataset Size} & \textbf{State} & \textbf{Wait Time (s)} & \textbf{CPU (\%)} & \textbf{Memory (MB)} \\ \hline
+3,400 Chunks (5\%) & Cold & 16.28 & 18.36 & 316.31 \\ \hline
+3,400 Chunks (5\%) & Warm & 11.35 & 20.93 & 311.78 \\ \hline  \hline
+64 Chunks (100\%) & Cold & 7.96 & 18.02 & 306.48 \\ \hline
+64 Chunks (100\%) & Warm & 3.29 & 28.31 & 301.80 \\ \hline
+\end{tabular}
+\caption{Comparison of Remote Calculation KPIs: Cold vs. Warm Cache}
+\label{tab:kpi_results}
 \end{table}
 
 
+\section{Comparing https and s3 protocols}
 
-
-
-
-
-
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ExecutionTime_HTTPS_vs_S3.pdf }
+    \caption{}
+    \label{fig:ExecutionTime_HTTPS_vs_S3}
+\end{figure}
 
 
 
@@ -437,7 +568,6 @@ Test 8 has the same conditions as Test 1 except now it is ran on the UoR Eduroam
 \end{table}
 
 
-
 %-----------------------------------------------------------------------------------
 %                          TEST 9
 %-----------------------------------------------------------------------------------
@@ -486,9 +616,6 @@ Test 9 is the same as Test 5 except in how the data is read in. Test 5 uses the 
     \label{tab:T10_Results}
 \end{table}
  
-
-
-
 
 
 \section{Tests \textcolor{red}{Rough draft, need to check still}}
